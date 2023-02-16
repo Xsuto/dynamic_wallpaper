@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN"
+        "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.xsuto.dynamic_wallpaper</string>
+    <key>ProgramArguments</key>
+    <array>
+        <string>/usr/local/bin/dynamic_wallpaper</string>
+        <string>--day-wallpapers-path</string>
+        <string>/Users/xslin/Desktop/wallpapers/day</string>
+        <string>--night-wallpapers-path</string>
+        <string>/Users/xslin/Desktop/wallpapers/night</string>
+        <string>--latitude</string>
+        <string>51.1079</string>
+        <string>--longitude</string>
+        <string>17.0385</string>
+    </array>
+    <key>RunAtLoad</key>
+    <true/>
+    <key>StandardOutPath</key>
+    <string>/var/log/dynamic_wallpaper.log</string>
+    <key>StandardErrorPath</key>
+    <string>/var/log/dynamic_wallpaper.log</string>
+</dict>
+</plist>
