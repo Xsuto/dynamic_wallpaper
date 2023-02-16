@@ -1,4 +1,5 @@
 use chrono::{DateTime, Utc};
+use log::info;
 use serde::Deserialize;
 
 mod time_format {
@@ -48,5 +49,6 @@ struct ApiResponse {
 
 pub fn get_day_info(latitude: f64, longitude: f64) -> anyhow::Result<DayInfo> {
     let url = format!("https://api.sunrisesunset.io/json?lat={latitude}&lng={longitude}");
+    info!("Sending api request {}", &url);
     Ok(reqwest::blocking::get(url)?.json::<ApiResponse>()?.results)
 }
