@@ -1,3 +1,4 @@
+#![feature(let_chains)]
 use std::fs;
 use std::path::{Path, PathBuf};
 use std::process::Command;
@@ -65,12 +66,21 @@ struct Args {
 
     #[arg(long)]
     longitude: f64,
+
+    #[arg(long, default_value_t = false)]
+    combine_day_and_night_for_day: bool
 }
 
 fn main() -> anyhow::Result<()> {
     let args = Args::parse();
-    let day_wallpapers = get_wallpapers(args.day_wallpapers_path)?;
     let night_wallpapers = get_wallpapers(args.night_wallpapers_path)?;
+    let day_wallpapers = if args.combine_day_and_night_for_day {
+        let mut it = get_wallpapers(args.day_wallpapers_path)?;
+        it.extend(night_wallpapers.clone());
+        it
+    } else {
+        get_wallpapers(args.day_wallpapers_path)?
+    };
     let change_wallpaper_every_nth_minutes =
         std::time::Duration::from_secs(60 * args.change_wallpaper_every_nth_minutes);
 
@@ -85,10 +95,8 @@ fn main() -> anyhow::Result<()> {
             continue;
         };
         let now = Local::now();
-        if now.day() != day_info.sunset.day() {
-            if let Ok(info) = api::get_day_info(args.latitude, args.longitude) {
-                *day_info = info;
-            }
+        if now.day() != day_info.sunset.day() && let Ok(info) = api::get_day_info(args.latitude,args.longitude) {
+            *day_info = info;
         }
         if (now.hour() >= day_info.sunset.hour()) || (now.hour() < day_info.sunrise.hour()) {
             set_random_wallpaper(&night_wallpapers)?;
