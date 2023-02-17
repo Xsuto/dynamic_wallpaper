@@ -7,7 +7,7 @@ use serde::ser::SerializeStruct;
 use serde::{Deserialize, Serialize, Serializer};
 
 mod time_format {
-    use chrono::{DateTime, NaiveDateTime, NaiveTime, Utc};
+    use chrono::{DateTime, Local, NaiveDateTime, NaiveTime, Utc};
     use log::info;
     use serde::{Deserialize, Deserializer, Serializer};
 
@@ -27,7 +27,7 @@ mod time_format {
     {
         let s = String::deserialize(deserializer)?;
         let time = NaiveTime::parse_from_str(&s, FORMAT).map_err(serde::de::Error::custom)?;
-        let date = Utc::now().date_naive();
+        let date = Local::now().date_naive();
         let thing = DateTime::from_utc(NaiveDateTime::new(date, time), Utc);
         Ok(thing)
     }
