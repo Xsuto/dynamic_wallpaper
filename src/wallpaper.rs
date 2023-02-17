@@ -28,7 +28,7 @@ impl Wallpapers {
             .collect::<Vec<PathBuf>>();
         Self {
             wallpapers_dirs,
-            current_wallpaper: None
+            current_wallpaper: None,
         }
     }
     pub fn set_random_wallpaper(&mut self, repeat: u64) -> anyhow::Result<()> {

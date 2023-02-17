@@ -1,9 +1,7 @@
 #![feature(let_chains)]
 #![allow(unused)]
 
-use std::fs;
-use std::path::{Path, PathBuf};
-use std::process::Command;
+use std::path::PathBuf;
 use std::thread::sleep;
 use std::time::Duration;
 
@@ -12,9 +10,8 @@ use clap::Parser;
 use log::{info, LevelFilter};
 use simplelog::{ColorChoice, Config, TermLogger, TerminalMode};
 
-mod api;
+mod day_info;
 mod wallpaper;
-
 
 #[derive(Parser, Debug)]
 #[command(author, version, about, long_about = None)]
@@ -38,6 +35,13 @@ struct Args {
     combine_day_and_night_for_day: bool,
 }
 
+fn get_day_info_path() -> anyhow::Result<PathBuf> {
+    let mut path = PathBuf::new();
+    path.push(dirs::home_dir().ok_or(anyhow::Error::msg("Couldn't get home dir"))?);
+    path.push(".day_info.json");
+    Ok(path)
+}
+
 fn main() -> anyhow::Result<()> {
     TermLogger::init(
         LevelFilter::Info,
@@ -46,28 +50,36 @@ fn main() -> anyhow::Result<()> {
         ColorChoice::Auto,
     )?;
     let args = Args::parse();
+    let day_info_path = get_day_info_path()?;
     let mut night_wallpapers = wallpaper::Wallpapers::try_from(&args.night_wallpapers_path)?;
     let mut day_wallpapers = if args.combine_day_and_night_for_day {
-        wallpaper::Wallpapers::new(&[&args.day_wallpapers_path,&args.night_wallpapers_path])
+        wallpaper::Wallpapers::new(&[&args.day_wallpapers_path, &args.night_wallpapers_path])
     } else {
         wallpaper::Wallpapers::from(&args.day_wallpapers_path)
     };
 
     // Don't want to crash the program just because we could not fetch info about current day
     // We will try to refetch it after some time
-    let mut day_info = api::get_day_info(args.latitude, args.longitude);
-
+    let mut day_info = day_info::get_from_file(&day_info_path);
     loop {
         let Ok(ref mut day_info) = day_info else {
             info!("Trying to get day_info");
-            day_info = api::get_day_info(args.latitude, args.longitude);
-            sleep(Duration::from_secs(60 * 5));
+            match day_info::fetch(args.latitude, args.longitude) {
+                Ok(it ) => {
+                    day_info::save_to_file(&day_info_path, &it);
+                    day_info = Ok(it);
+                }
+                Err(_) => {
+                    sleep(Duration::from_secs(60 * 5));
+                }
+            }
             continue;
         };
         let now = Local::now();
-        if now.day() != day_info.sunset.day() && let Ok(info) = api::get_day_info(args.latitude,args.longitude) {
+        if now.day() != day_info.sunset.day() && let Ok(info) = day_info::fetch(args.latitude, args.longitude) {
             info!("Updating day_info from day {} to {}",day_info.sunset.day(), now.day());
             *day_info = info;
+            day_info::save_to_file(&day_info_path, day_info);
         }
         if (now.hour() >= day_info.sunset.hour()) || (now.hour() < day_info.sunrise.hour()) {
             night_wallpapers.set_random_wallpaper(args.change_wallpaper_every_nth_minutes);
