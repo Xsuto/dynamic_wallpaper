@@ -10,7 +10,6 @@ use std::time::Duration;
 use chrono::prelude::*;
 use clap::Parser;
 use log::{info, LevelFilter};
-use rand::prelude::*;
 use simplelog::{ColorChoice, Config, TermLogger, TerminalMode};
 
 mod api;
@@ -47,14 +46,11 @@ fn main() -> anyhow::Result<()> {
         ColorChoice::Auto,
     )?;
     let args = Args::parse();
-    // TODO: Set dir watcher for those 2 dirs
-    let night_wallpapers = wallpaper::get_wallpapers(args.night_wallpapers_path)?;
-    let day_wallpapers = if args.combine_day_and_night_for_day {
-        let mut it = wallpaper::get_wallpapers(args.day_wallpapers_path)?;
-        it.extend(night_wallpapers.clone());
-        it
+    let mut night_wallpapers = wallpaper::Wallpapers::try_from(&args.night_wallpapers_path)?;
+    let mut day_wallpapers = if args.combine_day_and_night_for_day {
+        wallpaper::Wallpapers::new(&[&args.day_wallpapers_path,&args.night_wallpapers_path])
     } else {
-        wallpaper::get_wallpapers(args.day_wallpapers_path)?
+        wallpaper::Wallpapers::from(&args.day_wallpapers_path)
     };
 
     // Don't want to crash the program just because we could not fetch info about current day
@@ -74,9 +70,9 @@ fn main() -> anyhow::Result<()> {
             *day_info = info;
         }
         if (now.hour() >= day_info.sunset.hour()) || (now.hour() < day_info.sunrise.hour()) {
-            wallpaper::set_random_wallpaper(&night_wallpapers,args.change_wallpaper_every_nth_minutes);
+            night_wallpapers.set_random_wallpaper(args.change_wallpaper_every_nth_minutes);
         } else {
-            wallpaper::set_random_wallpaper(&day_wallpapers, args.change_wallpaper_every_nth_minutes);
+            day_wallpapers.set_random_wallpaper(args.change_wallpaper_every_nth_minutes);
         }
     }
 }
