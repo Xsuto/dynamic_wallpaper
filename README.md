@@ -7,14 +7,14 @@ Replace `<DAY_WALLPAPERS_PATH>` with the path to the directory containing your d
 
 You can also see a list of available options with the following command:
 
-cargo run -- --help
+`cargo run -- --help`
 
 
 # How to run it in background
 
 1. Build the program in release mode: command cargo build --release
 
-2. Link the program to a directory in your $PATH. For example: ln -s ~/Desktop/dev/dynamic_wallpaper/target/release/dynamic_wallpaper /usr/local/bin
+2. Link the program to a directory in your $PATH. For example: `ln -s ~/Desktop/dev/dynamic_wallpaper/target/release/dynamic_wallpaper /usr/local/bin`
 
 Replace ~/Desktop/dev/dynamic_wallpaper/target/release/dynamic_wallpaper with the path to your program.
 
@@ -34,10 +34,10 @@ Replace /wallpapers/day with the path to your daytime wallpapers, /wallpapers/ni
 If you linked the program to a different directory than /usr/local/bin, also update the following line:
 &lt;string&gt;/usr/local/bin/dynamic_wallpaper&lt;/string&gt;
 
-4. Link the com.xsuto.dynamic_wallpaper.plist file to the /Library/LaunchDaemons directory: sudo ln -s ~/Desktop/dev/dynamic_wallpaper/com.xsuto.dynamic_wallpaper.plist /Library/LaunchDaemons
+4. Link the com.xsuto.dynamic_wallpaper.plist file to the /Library/LaunchDaemons directory: `sudo ln -s ~/Desktop/dev/dynamic_wallpaper/com.xsuto.dynamic_wallpaper.plist /Library/LaunchDaemons`
 
 Replace ~/Desktop/dev/dynamic_wallpaper/com.xsuto.dynamic_wallpaper.plist with the path to your com.xsuto.dynamic_wallpaper.plist file.
 
-5. Load the launch daemon to start the program: launchctl load /Library/LaunchDaemons/com.xsuto.dynamic_wallpaper.plist
+5. Load the launch daemon to start the program: `launchctl load /Library/LaunchDaemons/com.xsuto.dynamic_wallpaper.plist`
 
-6. To stop the program, unload the launch daemon: launchctl unload /Library/LaunchDaemons/com.xsuto.dynamic_wallpaper.plist
+6. To stop the program, unload the launch daemon: `launchctl unload /Library/LaunchDaemons/com.xsuto.dynamic_wallpaper.plist`
