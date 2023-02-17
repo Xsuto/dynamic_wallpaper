@@ -28,7 +28,7 @@ impl Wallpapers {
             .collect::<Vec<PathBuf>>();
         Self {
             wallpapers_dirs,
-            current_wallpaper: Some("/Users/xslin/Desktop/wallpapers/day/pexels-evie-shaffer-4060936.jpg".into()),
+            current_wallpaper: None
         }
     }
     pub fn set_random_wallpaper(&mut self, repeat: u64) -> anyhow::Result<()> {
@@ -38,15 +38,13 @@ impl Wallpapers {
             .iter()
             .filter_map(|it| get_wallpapers(it).ok())
             .flatten()
-            .filter_map(|it| {
-                match &self.current_wallpaper {
-                    None => Some(it),
-                    Some(current_wallpaper) => {
-                        if current_wallpaper == &it {
-                           None
-                        } else {
-                           Some(it)
-                        }
+            .filter_map(|it| match &self.current_wallpaper {
+                None => Some(it),
+                Some(current_wallpaper) => {
+                    if current_wallpaper == &it {
+                        None
+                    } else {
+                        Some(it)
                     }
                 }
             })
