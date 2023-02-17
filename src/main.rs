@@ -12,6 +12,7 @@ use simplelog::{ColorChoice, Config, TermLogger, TerminalMode};
 
 mod day_info;
 mod wallpaper;
+use wallpaper::Wallpapers;
 
 #[derive(Parser, Debug)]
 #[command(author, version, about, long_about = None)]
@@ -51,11 +52,11 @@ fn main() -> anyhow::Result<()> {
     )?;
     let args = Args::parse();
     let day_info_path = get_day_info_path()?;
-    let mut night_wallpapers = wallpaper::Wallpapers::try_from(&args.night_wallpapers_path)?;
+    let mut night_wallpapers = Wallpapers::try_from(&args.night_wallpapers_path)?;
     let mut day_wallpapers = if args.combine_day_and_night_for_day {
-        wallpaper::Wallpapers::new(&[&args.day_wallpapers_path, &args.night_wallpapers_path])
+        Wallpapers::new(&[&args.day_wallpapers_path, &args.night_wallpapers_path])
     } else {
-        wallpaper::Wallpapers::from(&args.day_wallpapers_path)
+        Wallpapers::from(&args.day_wallpapers_path)
     };
 
     // Don't want to crash the program just because we could not fetch info about current day
