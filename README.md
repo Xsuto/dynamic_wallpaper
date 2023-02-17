@@ -12,7 +12,7 @@ You can also see a list of available options with the following command:
 
 # How to run it in background
 
-1. Build the program in release mode: command cargo build --release
+1. Build the program in release mode: command `cargo build --release`
 
 2. Link the program to a directory in your $PATH. For example: `ln -s ~/Desktop/dev/dynamic_wallpaper/target/release/dynamic_wallpaper /usr/local/bin`
 
